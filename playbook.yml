@@ -15,6 +15,11 @@
       ansible.builtin.pip:
         name: datadog
 
+    - name: Create a Docker environment file
+      ansible.builtin.template:
+        src: .env.example
+        dest: .env
+
 - name: Deploy application
   hosts: all
   gather_facts: no
