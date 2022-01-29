@@ -28,7 +28,7 @@
       community.docker.docker_container:
         name: redmine
         image: redmine:alpine
-        published_ports: "{{ app_port }}:3000"
+        published_ports: '3000:3000'
         restart_policy: always
         restart: yes
         container_default_behavior: no_defaults
