@@ -1,0 +1,41 @@
+- name: Install dependencies
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Install packages
+      ansible.builtin.apt:
+        name: python3-pip
+        update_cache: yes
+
+    - name: Install Docker Module for Python
+      ansible.builtin.pip:
+        name: docker
+
+    - name: Install Datatog Module for Python
+      ansible.builtin.pip:
+        name: datadog
+
+- name: Deploy application
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Run container
+      community.docker.docker_container:
+        name: redmine
+        image: redmine:alpine
+        published_ports: "{{ app_port }}:3000"
+        restart_policy: always
+        restart: yes
+        container_default_behavior: no_defaults
+        pull: yes
+        env_file: .env
+
+- name: Install datadog
+  hosts: webservers
+  gather_facts: no
+  roles:
+    - { role: datadog.datadog, become: yes }
+  vars:
+    datadog_api_key: '{{ dd_api_key }}'
+    datadog_site: '{{ dd_site }}'
+    datadog_checks: '{{ dd_checks }}'
