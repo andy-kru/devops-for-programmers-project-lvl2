@@ -1,23 +1,20 @@
 - name: Install dependencies
   hosts: all
   gather_facts: no
+  roles:
+    - geerlingguy.pip
+  vars:
+    pip_install_packages:
+      - name: python3-pip
+      - name: docker
+      - name: datadog
+
+- name: Create a Docker environment file
+  hosts: all
+  gather_facts: no
   tasks:
-    - name: Install packages
-      ansible.builtin.apt:
-        name: python3-pip
-        update_cache: yes
-
-    - name: Install Docker Module for Python
-      ansible.builtin.pip:
-        name: docker
-
-    - name: Install Datatog Module for Python
-      ansible.builtin.pip:
-        name: datadog
-
-    - name: Create a Docker environment file
-      ansible.builtin.template:
-        src: .env.example
+    - ansible.builtin.template:
+        src: /templates/.env.j2
         dest: .env
 
 - name: Deploy application
@@ -27,8 +24,8 @@
     - name: Run container
       community.docker.docker_container:
         name: redmine
-        image: redmine:alpine
-        published_ports: '3000:3000'
+        image: redmine:4.2.3-alpine
+        published_ports: '{{ app_port }}:3000'
         restart_policy: always
         restart: yes
         container_default_behavior: no_defaults
@@ -41,6 +38,6 @@
   roles:
     - { role: datadog.datadog, become: yes }
   vars:
-    datadog_api_key: '{{ dd_api_key }}'
-    datadog_site: '{{ dd_site }}'
-    datadog_checks: '{{ dd_checks }}'
+    datadog_api_key: '{{ datadog_api_key }}'
+    datadog_site: '{{ datadog_site }}'
+    datadog_checks: '{{ datadog_checks }}'

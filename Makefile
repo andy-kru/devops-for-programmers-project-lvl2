@@ -2,8 +2,7 @@ touch-vault-password-file:
 	touch vault-password
 
 install:
-	ansible-galaxy role install -r requirements.yml
-	ansible-galaxy collection install -r requirements.yml
+	ansible-galaxy install -r requirements.yml
 
 setup:
 	touch-vault-password-file install
