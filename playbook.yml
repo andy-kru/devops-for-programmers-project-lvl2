@@ -3,9 +3,7 @@
   roles:
     - geerlingguy.pip
   vars:
-    pip_install_packages:
-      - name: docker
-      - name: datadog
+    pip_install_packages: '{{ pip_packages }}'
 
 - name: Deploy application
   hosts: all
@@ -19,8 +17,8 @@
     - name: Run container
       community.docker.docker_container:
         name: redmine
-        image: redmine:4.2.3-alpine
-        published_ports: '{{ app_port }}:3000'
+        image: 'redmine:{{ redmine_version }}'
+        published_ports: '{{ redmine_port }}:3000'
         restart_policy: always
         restart: yes
         container_default_behavior: no_defaults
@@ -31,7 +29,7 @@
   hosts: webservers
   gather_facts: no
   roles:
-    - { role: datadog.datadog, become: yes }
+    - datadog.datadog
   vars:
     datadog_api_key: '{{ datadog_api_key }}'
     datadog_site: '{{ datadog_site }}'

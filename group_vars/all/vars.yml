@@ -1,9 +1,15 @@
-app_port: "3000"
+pip_packages:
+  - docker
+  - datadog
+
+redmine_port: "3000"
+redmine_version: 4.2.3-alpine
+
 datadog_checks:
   http_check:
     init_config:
     instances:
       - name: Application health check status
-        url: "http://localhost:{{ app_port }}"
+        url: "http://localhost:{{ redmine_port }}"
         timeout: 5
         method: GET
